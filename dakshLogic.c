@@ -46,6 +46,22 @@ void interactive(void){
     for (int i = 0; i < argc; i++) {
       printf("Token[%d]: %s\n", i, argv[i]);
     }
+
+    pid_t pid = fork();
+    if (pid < 0) {
+      // fork failed
+      fprintf(stderr, "fork failed\n");
+      continue; // exit(1); // skipping this for now and not killing it, yet...
+    } else if (pid == 0) {
+      // child (new process)
+      execvp(argv[0], argv);
+      fprintf(stderr, "exec failed\n"); // only reached if exev fails as implied
+      exit(1);
+    } else {
+      // parent
+      waitpid(pid, NULL, 0); 
+    }
+
   } 
   free(input);
 }
